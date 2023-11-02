@@ -1,0 +1,42 @@
+---
+- name: Automated AppFlowy Build
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Clone AppFlowy Repository
+      git:
+        repo: https://github.com/AppFlowy-IO/appflowy.git
+        dest: /path/to/appflowy 
+        update: yes
+      become: no
+      register: git_clone
+
+    - name: Install Visual Studio 2022 Build Tools
+      win_command: '"C:\path\to\vs_BuildTools.exe" --add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.Component.MSBuild --quiet --norestart'
+      when: git_clone is changed
+      become: yes
+
+    - name: Install vcpkg
+      win_command: 'C:\path\to\vcpkg\bootstrap-vcpkg.bat'
+      args:
+        chdir: "{{ git_clone.dest }}/vcpkg"
+      when: git_clone is changed
+      become: yes
+
+    - name: Install Flutter
+      win_shell: |
+        flutter channel stable
+        flutter upgrade --force
+        flutter config --enable-windows-desktop
+      when: git_clone is changed
+      become: no
+
+
+    - name: Activate Developer Mode on Windows 10
+      win_regedit:
+        path: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock
+        name: AllowDevelopmentWithoutDevLicense
+        data: 1
+        type: dword
+      when: git_clone is changed and ansible_facts['ansible_distribution_version'] == "11"
+      become: yes

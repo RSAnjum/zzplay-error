@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/bionic64"
+  config.vm.network "private_network", type: "dhcp"
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 2048
+  end
+
+  config.vm.define "APPflowy" do |appflowy|
+    appflowy.vm.provision "ansible" do |ansible|
+      ansible.playbook = "ansible/appflowy.yml"  
+      ansible.limit = "APPflowy"  
+    end
+  end
+
+
+  config.vm.define "Rocket.Chat.ReactNative" do |rocketChatReactNative|
+    rocketChatReactNative.vm.provision "ansible" do |ansible|
+      ansible.playbook = "ansible/rocketchatreactnative.yml"  
+      ansible.limit = "Rocket.Chat.ReactNative"  
+    end
+  end
+
+
+  config.vm.define "Rocket.Chat" do |rocketChat|
+    rocketChat.vm.provision "ansible" do |ansible|
+      ansible.playbook = "ansible/rocketchat.yml"  
+      ansible.limit = "Rocket.Chat"  
+    end
+  end
+end
