@@ -1,0 +1,58 @@
+---
+- name: Automated Rocket.Chat Development Environment Setup
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Update Ubuntu WSL 2
+      command: sudo apt-get update && sudo apt-get dist-upgrade -y
+      become: yes
+
+    - name: Install Node.js 14.x (LTS)
+      become: yes
+      command: curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+      when: "'deb.nodesource.com' not in ansible_facts.packages"
+    - name: Install Node.js 14.x (LTS) - Part 2
+      become: yes
+      command: sudo apt-get install -y nodejs
+      when: "'nodejs' not in ansible_facts.packages"
+
+    - name: Install Meteor
+      become: yes
+      command: curl https://install.meteor.com/ | sh
+      when: "'meteor' not in ansible_facts.packages"
+
+    - name: Install Yarn package manager
+      become: yes
+      command: npm install --global yarn
+      when: "'yarn' not in ansible_facts.packages"
+
+    - name: Clone Rocket.Chat repository
+      become: no
+      command: git clone https://github.com/<your-username>/Rocket.Chat.git /home/{{ ansible_user }}/Rocket.Chat
+      args:
+        chdir: /home/{{ ansible_user }}
+      environment:
+        GIT_TERMINAL_PROMPT: 0  
+      register: git_clone
+
+    - name: Navigate to Rocket.Chat directory
+      become: no
+      command: cd /home/{{ ansible_user }}/Rocket.Chat
+      args:
+        chdir: /home/{{ ansible_user }}/Rocket.Chat
+
+    - name: Install Rocket.Chat dependencies
+      become: no
+      command: yarn
+      args:
+        chdir: /home/{{ ansible_user }}/Rocket.Chat
+
+    - name: Build and run the Rocket.Chat server
+      become: no
+      command: yarn dsv
+      args:
+        chdir: /home/{{ ansible_user }}/Rocket.Chat
+      async: 3600
+      poll: 0
+
+   \
