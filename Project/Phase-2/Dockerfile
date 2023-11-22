@@ -1,3 +1,5 @@
-FROM jitsucom/jitsu
+FROM odoo
 
-CMD npm start
+RUN apt-get update && apt-get install -y postgresql-client
+
+CMD odoo
