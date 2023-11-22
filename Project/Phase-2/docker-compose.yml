@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  odoo:
+    build: ./odoo
+    ports:
+      - '8069:8069'
+    links:
+      - db
+  jitsu:
+    build: ./jitsu
+    ports:
+      - '8000:8000'
+    environment:
+      REDIS_URL: redis://redis:6379
+  superset:
+    build: ./superset
+    ports:
+      - '8080:8088'
+    environment:
+      SUPERSET_SECRET_KEY: vQmRkwpRNm5u_6IKXBX9739bXkhiueMF
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+      POSTGRES_DB: postgres
+  redis:
+    image: redis
