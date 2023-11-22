@@ -1,0 +1,4 @@
+---
+- name: community.docker
+  src: https://github.com/geerlingguy/ansible-role-docker
+  version: v4.7.0
