@@ -1,5 +1,3 @@
-FROM odoo
+FROM apache/superset
 
-RUN apt-get update && apt-get install -y postgresql-client
-
-CMD odoo
+CMD superset run -p 8088 --with-threads --reload --debugger
