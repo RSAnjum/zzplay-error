@@ -1,0 +1,5 @@
+# my_flutter_app/Chart.yaml
+apiVersion: v2
+name: my-flutter-app
+description: A Helm chart for deploying Flutter app on Kubernetes
+version: 0.1.0

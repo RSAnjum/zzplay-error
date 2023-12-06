@@ -1,0 +1,10 @@
+# my_flutter_app/values.yaml
+replicaCount: 1
+image:
+  repository: your-docker-username/my-flutter-app
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  name: my-flutter-app
+  type: ClusterIP
+  port: 80
